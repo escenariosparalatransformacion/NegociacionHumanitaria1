@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario (Información Esencial para el Diseño de una Negociación)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .tab {
+            display: none;
+        }
+        .tab-button {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px; 
+        }
+        /* Colores para cada fase */
+        #fase1 .tab-button { background-color: #3498db; } /* Azul */
+        #fase2 .tab-button { background-color: #e67e22; } /* Naranja */
+        #fase3 .tab-button { background-color: #2ecc71; } /* Verde */
+        #fase4 .tab-button { background-color: #9b59b6; } /* Morado */
+
+        .tab-button:hover {
+            opacity: 0.8;
+        }
+        .active {
+            opacity: 1;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap; 
+        }
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px; 
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        .collapsible {
+            background-color: #f1f1f1;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            border-radius: 5px; 
+        }
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+        #printButton {
+            display: block;
+            margin: 20px auto;
+            font-size: 18px;
+            padding: 15px 30px;
+            background-color: #e74c3c; /* Color rojo */
+        }
+        #printButton:hover {
+            background-color: #c0392b; /* Color rojo más oscuro */
+        }
+        #languageSwitcher {
+            margin-bottom: 20px;
+        }
+        .recording-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .recording-controls button {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        /* Estilos para los iconos (usando pseudo-elementos) */
+        .tab-button:before {
+            content: '► '; /* Icono de flecha derecha */
+            margin-right: 5px;
+        }
+        #printButton:before {
+            content: '🖨️ '; /* Icono de impresora */
+            margin-right: 5px;
+        }
+        /* Estilos para la previsualización imprimible */
+        #printable-content {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #printable-content h2, #printable-content h3 {
+            color: #2c3e50;
+        }
+        #printable-content p {
+            margin-bottom: 10px;
+        }
+        #printable-content strong {
+            font-weight: bold;
+        }
+        /* Iconos para los botones de grabación */
+        .recording-controls button[onclick^="startRecording"]:before {
+            content: '🎤 '; /* Icono de micrófono */
+        }
+        .recording-controls button[onclick^="stopRecording"]:before {
+            content: '⏹️ '; /* Icono de stop */
+        }
+        .recording-controls button[onclick^="deleteRecording"]:before {
+            content: '🗑️ '; /* Icono de papelera */
+        }
+        .recording-controls button[onclick^="saveRecording"]:before {
+            content: '💾 '; /* Icono de guardar */
+        }
+        /* Estilo para el placeholder del textarea */
+        textarea::placeholder {
+            color: #999; /* Color gris claro para el placeholder */
+        }
+        /* Eliminar límite de altura del textarea */
+        textarea {
+            height: auto; /* Altura automática */
+            min-height: 100px; /* Altura mínima */
+        }
+    </style>
+</head>
+<body>
+    <h1><span data-translate="form-title">Formulario (Información Esencial para el Diseño de una Negociación)</span></h1>
+
+    <div id="languageSwitcher">
+        <button onclick="changeLanguage('es')"><span data-translate="language-spanish">Español</span> <img src="https://flagcdn.com/16x12/es.png" alt="Español"></button>
+        <button onclick="changeLanguage('en')"><span data-translate="language-english">English</span> <img src="https://flagcdn.com/16x12/gb.png" alt="English"></button>
+    </div>
+
+    <!-- Sección para el título, grupo y fecha -->
+    <div>
+        <label for="negotiationTitle"><span data-translate="negotiation-title">Título de la Negociación:</span></label><br>
+        <input type="text" id="negotiationTitle" name="negotiationTitle"><br><br>
+
+        <label for="negotiationGroup"><span data-translate="negotiation-group">¿Quién está Negociando?:</span></label><br>
+        <input type="text" id="negotiationGroup" name="negotiationGroup"><br><br>
+
+        <label for="negotiationCounterpart"><span data-translate="negotiation-counterpart">¿Con Quién se está Negociando?:</span></label><br>
+        <input type="text" id="negotiationCounterpart" name="negotiationCounterpart"><br><br>
+
+        <label for="negotiationDate"><span data-translate="negotiation-date">Fecha:</span></label><br>
+        <input type="date" id="negotiationDate" name="negotiationDate"><br><br>
+    </div>
+
+    <div id="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'fase1')"><span data-translate="phase-1">Fase 1</span></button>
+        <button class="tab-button" onclick="openTab(event, 'fase2')"><span data-translate="phase-2">Fase 2</span></button>
+        <button class="tab-button" onclick="openTab(event, 'fase3')"><span data-translate="phase-3">Fase 3</span></button>
+        <button class="tab-button" onclick="openTab(event, 'fase4')"><span data-translate="phase-4">Fase 4</span></button>
+    </div>
+
+    <form id="negotiationForm">
+        <div id="fase1" class="tab" style="display:block;">
+            <h2><span data-translate="fase1-title">Fase 1: Entendiendo el Contexto</span></h2>
+            <p><span data-translate="common-recording-instruction">Si no deseas escribir, puedes grabar tu respuesta.</span></p>
+            
+            <button type="button" class="collapsible"><span data-translate="fase1-question1">Situación humanitaria actual</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question1-description">Describe la crisis, las necesidades de la población afectada y los riesgos existentes.</span></p>
+                <textarea id="situacionHumanitaria" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="situacionHumanitariaControls">
+                    <button onclick="startRecording('situacionHumanitaria')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('situacionHumanitaria')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('situacionHumanitaria')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question2">Actores clave involucrados</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question2-description">Lista a las partes principales de la negociación, otras organizaciones humanitarias, actores políticos y líderes comunitarios.</span></p>
+                <textarea id="actoresClave" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="actoresClaveControls">
+                    <button onclick="startRecording('actoresClave')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('actoresClave')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('actoresClave')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question3">Intereses, motivaciones y valores de cada actor clave</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question3-description">Describe sus objetivos, prioridades y la lógica detrás de sus acciones.</span></p>
+                <textarea id="interesesActores" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="interesesActoresControls">
+                    <button onclick="startRecording('interesesActores')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('interesesActores')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('interesesActores')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question4">Normas y valores compartidos</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question4-description">Identifica los puntos de convergencia que pueden servir como base para el diálogo.</span></p>
+                <textarea id="normasCompartidas" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="normasCompartidasControls">
+                    <button onclick="startRecording('normasCompartidas')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('normasCompartidas')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('normasCompartidas')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question5">Normas y valores en conflicto</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question5-description">Describe las divergencias que generan tensiones en la negociación.</span></p>
+                <textarea id="normasConflicto" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="normasConflictoControls">
+                    <button onclick="startRecording('normasConflicto')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('normasConflicto')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('normasConflicto')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question6">Información crucial para la negociación</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question6-description">¿Qué datos son necesarios para evaluar la situación, planificar la operación y asegurar la rendición de cuentas?</span></p>
+                <textarea id="informacionCrucial" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="informacionCrucialControls">
+                    <button onclick="startRecording('informacionCrucial')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('informacionCrucial')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('informacionCrucial')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase1-question7">Fuentes de información confiables</span></button>
+            <div class="content">
+                <p><span data-translate="fase1-question7-description">¿Cómo se puede obtener información precisa y verificada?</span></p>
+                <textarea id="fuentesConfiables" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="fuentesConfiablesControls">
+                    <button onclick="startRecording('fuentesConfiables')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('fuentesConfiables')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('fuentesConfiables')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button onclick="nextTab()"><span data-translate="next">Siguiente</span></button>
+        </div>
+
+        <div id="fase2" class="tab">
+            <h2><span data-translate="fase2-title">Fase 2: Planificando la Estrategia</span></h2>
+            <p><span data-translate="common-recording-instruction">Si no deseas escribir, puedes grabar tu respuesta.</span></p>
+            
+            <button type="button" class="collapsible"><span data-translate="fase2-question1">Objetivo principal de la negociación</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question1-description">Define el resultado deseado de la negociación (e.g., acceso, distribución de ayuda, protección).</span></p>
+                <textarea id="objetivoPrincipal" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="objetivoPrincipalControls">
+                    <button onclick="startRecording('objetivoPrincipal')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('objetivoPrincipal')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('objetivoPrincipal')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question2">Prioridades de la organización humanitaria</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question2-description">Lista las prioridades en orden de importancia (e.g., seguridad del personal, impacto, sostenibilidad).</span></p>
+                <textarea id="prioridadesOrganizacion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="prioridadesOrganizacionControls">
+                    <button onclick="startRecording('prioridadesOrganizacion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('prioridadesOrganizacion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('prioridadesOrganizacion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question3">Tipo de negociación más apropiada</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question3-description">(Adversarial, Transaccional o Relacional). Justifica tu respuesta.</span></p>
+                <textarea id="tipoNegociacion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="tipoNegociacionControls">
+                    <button onclick="startRecording('tipoNegociacion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('tipoNegociacion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('tipoNegociacion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question4">Tipo de sub-negociación más apropiada</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question4-description">(Política, Profesional o Técnica). Justifica tu respuesta.</span></p>
+                <textarea id="tipoSubNegociacion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="tipoSubNegociacionControls">
+                    <button onclick="startRecording('tipoSubNegociacion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('tipoSubNegociacion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('tipoSubNegociacion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question5">Negociador más adecuado</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question5-description">Describe el perfil y la experiencia del negociador ideal para liderar el proceso.</span></p>
+                <textarea id="perfilNegociador" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="perfilNegociadorControls">
+                    <button onclick="startRecording('perfilNegociador')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('perfilNegociador')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('perfilNegociador')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question6">Líneas rojas innegociables</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question6-description">Lista los límites que no se pueden cruzar bajo ninguna circunstancia para la organización.</span></p>
+                <textarea id="lineasRojas" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="lineasRojasControls">
+                    <button onclick="startRecording('lineasRojas')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('lineasRojas')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('lineasRojas')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question7">Argumentos para persuadir a la contraparte</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question7-description">Identifica los argumentos basados en valores compartidos, lógica, intereses o necesidades.</span></p>
+                <textarea id="argumentosPersuasion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="argumentosPersuasionControls">
+                    <button onclick="startRecording('argumentosPersuasion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('argumentosPersuasion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('argumentosPersuasion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase2-question8">Creación de un ambiente propicio</span></button>
+            <div class="content">
+                <p><span data-translate="fase2-question8-description">Describe las estrategias para generar confianza, promover la colaboración y manejar las tensiones.</span></p>
+                <textarea id="ambientePropicio" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="ambientePropicioControls">
+                    <button onclick="startRecording('ambientePropicio')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('ambientePropicio')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('ambientePropicio')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button onclick="previousTab()"><span data-translate="previous">Anterior</span></button>
+            <button onclick="nextTab()"><span data-translate="next">Siguiente</span></button>
+        </div>
+
+        <div id="fase3" class="tab">
+            <h2><span data-translate="fase3-title">Fase 3: Definiendo la Transacción</span></h2>
+            <p><span data-translate="common-recording-instruction">Si no deseas escribir, puedes grabar tu respuesta.</span></p>
+            
+            <button type="button" class="collapsible"><span data-translate="fase3-question1">Términos específicos del acuerdo</span></button>
+            <div class="content">
+                <p><span data-translate="fase3-question1-description">Define los detalles de la operación (e.g., acceso, distribución, monitoreo).</span></p>
+                <textarea id="terminosAcuerdo" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="terminosAcuerdoControls">
+                    <button onclick="startRecording('terminosAcuerdo')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('terminosAcuerdo')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('terminosAcuerdo')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase3-question2">Roles y responsabilidades de cada parte</span></button>
+            <div class="content">
+                <p><span data-translate="fase3-question2-description">Especifica las tareas y obligaciones de cada actor.</span></p>
+                <textarea id="rolesResponsabilidades" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="rolesResponsabilidadesControls">
+                    <button onclick="startRecording('rolesResponsabilidades')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('rolesResponsabilidades')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('rolesResponsabilidades')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase3-question3">Gestión de la comunicación interna y externa</span></button>
+            <div class="content">
+                <p><span data-translate="fase3-question3-description">Describe los canales de comunicación y los protocolos para la aprobación de mensajes.</span></p>
+                <textarea id="gestionComunicacion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="gestionComunicacionControls">
+                    <button onclick="startRecording('gestionComunicacion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('gestionComunicacion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('gestionComunicacion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase3-question4">Mecanismos para monitorear la implementación</span></button>
+            <div class="content">
+                <p><span data-translate="fase3-question4-description">Define los indicadores de éxito y los procedimientos de seguimiento.</span></p>
+                <textarea id="mecanismosMonitoreo" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="mecanismosMonitoreoControls">
+                    <button onclick="startRecording('mecanismosMonitoreo')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('mecanismosMonitoreo')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('mecanismosMonitoreo')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button onclick="previousTab()"><span data-translate="previous">Anterior</span></button>
+            <button onclick="nextTab()"><span data-translate="next">Siguiente</span></button>
+        </div>
+
+        <div id="fase4" class="tab">
+            <h2><span data-translate="fase4-title">Fase 4: Gestionando las Relaciones</span></h2>
+            <p><span data-translate="common-recording-instruction">Si no deseas escribir, puedes grabar tu respuesta.</span></p>
+            
+            <button type="button" class="collapsible"><span data-translate="fase4-question1">Fortalecimiento de la relación a largo plazo</span></button>
+            <div class="content">
+                <p><span data-translate="fase4-question1-description">Describe las estrategias para construir confianza y colaboración.</span></p>
+                <textarea id="fortalecimientoRelacion" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="fortalecimientoRelacionControls">
+                    <button onclick="startRecording('fortalecimientoRelacion')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('fortalecimientoRelacion')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('fortalecimientoRelacion')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase4-question2">Aprovechamiento de la red de influencia</span></button>
+            <div class="content">
+                <p><span data-translate="fase4-question2-description">Identifica a los actores clave que pueden brindar apoyo para facilitar la negociación y la implementación del acuerdo.</span></p>
+                <textarea id="redInfluencia" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="redInfluenciaControls">
+                    <button onclick="startRecording('redInfluencia')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('redInfluencia')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('redInfluencia')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible"><span data-translate="fase4-question3">Aseguramiento de la sostenibilidad del acuerdo</span></button>
+            <div class="content">
+                <p><span data-translate="fase4-question3-description">Describe los mecanismos para garantizar la continuidad del acceso y la asistencia a largo plazo.</span></p>
+                <textarea id="sostenibilidadAcuerdo" placeholder="Coloque su información aquí" rows="4"></textarea>
+                <div class="recording-controls" id="sostenibilidadAcuerdoControls">
+                    <button onclick="startRecording('sostenibilidadAcuerdo')"><span data-translate="record">Grabar</span></button>
+                    <button onclick="stopRecording('sostenibilidadAcuerdo')" disabled><span data-translate="stop">Detener</span></button>
+                    <button onclick="deleteRecording('sostenibilidadAcuerdo')"><span data-translate="delete">Eliminar</span></button>
+                    <button onclick="saveForm()"><span data-translate="save">Guardar</span></button>
+                </div>
+            </div>
+
+            <button onclick="previousTab()"><span data-translate="previous">Anterior</span></button>
+        </div>
+    </form>
+
+    <button onclick="saveForm()"><span data-translate="save-form">Guardar Formulario Completo</span></button>
+    <button onclick="clearForm()"><span data-translate="clear-form">Limpiar Formulario Completo</span></button>
+    <button id="printButton" onclick="showPrintableContent()"><span data-translate="preview-print">Previsualizar e Imprimir</span></button>
+
+    <script>
+        var currentTab = 1;
+        var recognition = null;
+        var recordingFieldName = null;
+        var isFinalResult = false; // Variable para rastrear resultados finales
+        var currentLanguage = 'es'; // Idioma actual: español por defecto
+
+        const translations = {
+            es: {
+                'form-title': 'Formulario (Información Esencial para el Diseño de una Negociación)',
+                'language-spanish': 'Español',
+                'language-english': 'English',
+                'negotiation-title': 'Título de la Negociación:',
+                'negotiation-group': '¿Quién está Negociando?:',
+                'negotiation-counterpart': '¿Con Quién se está Negociando?:',
+                'negotiation-date': 'Fecha:',
+                'phase-1': 'Fase 1',
+                'phase-2': 'Fase 2',                                                               		'phase-3': 'Fase 3',
+                'phase-4': 'Fase 4',
+                'fase1-title': 'Fase 1: Entendiendo el Contexto',
+                'fase2-title': 'Fase 2: Planificando la Estrategia',
+                'fase3-title': 'Fase 3: Definiendo la Transacción',
+                'fase4-title': 'Fase 4: Gestionando las Relaciones',
+                'common-recording-instruction': 'Si no deseas escribir, puedes grabar tu respuesta.',
+                'fase1-question1': 'Situación humanitaria actual',
+                'fase1-question1-description': 'Describe la crisis, las necesidades de la población afectada y los riesgos existentes.',
+                'fase1-question2': 'Actores clave involucrados',
+                'fase1-question2-description': 'Lista a las partes principales de la negociación, otras organizaciones humanitarias, actores políticos y líderes comunitarios.',
+                'fase1-question3': 'Intereses, motivaciones y valores de cada actor clave',
+                'fase1-question3-description': 'Describe sus objetivos, prioridades y la lógica detrás de sus acciones.',
+                'fase1-question4': 'Normas y valores compartidos',
+                'fase1-question4-description': 'Identifica los puntos de convergencia que pueden servir como base para el diálogo.',
+                'fase1-question5': 'Normas y valores en conflicto',
+                'fase1-question5-description': 'Describe las divergencias que generan tensiones en la negociación.',
+                'fase1-question6': 'Información crucial para la negociación',
+                'fase1-question6-description': '¿Qué datos son necesarios para evaluar la situación, planificar la operación y asegurar la rendición de cuentas?',
+                'fase1-question7': 'Fuentes de información confiables',
+                'fase1-question7-description': '¿Cómo se puede obtener información precisa y verificada?',
+                'fase2-question1': 'Objetivo principal de la negociación',
+                'fase2-question1-description': 'Define el resultado deseado de la negociación (e.g., acceso, distribución de ayuda, protección).',
+                'fase2-question2': 'Prioridades de la organización humanitaria',
+                'fase2-question2-description': 'Lista las prioridades en orden de importancia (e.g., seguridad del personal, impacto, sostenibilidad).',
+                'fase2-question3': 'Tipo de negociación más apropiada',
+                'fase2-question3-description': '(Adversarial, Transaccional o Relacional). Justifica tu respuesta.',
+                'fase2-question4': 'Tipo de sub-negociación más apropiada',
+                'fase2-question4-description': '(Política, Profesional o Técnica). Justifica tu respuesta.',
+                'fase2-question5': 'Negociador más adecuado',
+                'fase2-question5-description': 'Describe el perfil y la experiencia del negociador ideal para liderar el proceso.',
+                'fase2-question6': 'Líneas rojas innegociables',
+                'fase2-question6-description': 'Lista los límites que no se pueden cruzar bajo ninguna circunstancia para la organización.',
+                'fase2-question7': 'Argumentos para persuadir a la contraparte',
+                'fase2-question7-description': 'Identifica los argumentos basados en valores compartidos, lógica, intereses o necesidades.',
+                'fase2-question8': 'Creación de un ambiente propicio',
+                'fase2-question8-description': 'Describe las estrategias para generar confianza, promover la colaboración y manejar las tensiones.',
+                'fase3-question1': 'Términos específicos del acuerdo',
+                'fase3-question1-description': 'Define los detalles de la operación (e.g., acceso, distribución, monitoreo).',
+                'fase3-question2': 'Roles y responsabilidades de cada parte',
+                'fase3-question2-description': 'Especifica las tareas y obligaciones de cada actor.',
+                'fase3-question3': 'Gestión de la comunicación interna y externa',
+                'fase3-question3-description': 'Describe los canales de comunicación y los protocolos para la aprobación de mensajes.',
+                'fase3-question4': 'Mecanismos para monitorear la implementación',
+                'fase3-question4-description': 'Define los indicadores de éxito y los procedimientos de seguimiento.',
+                'fase4-question1': 'Fortalecimiento de la relación a largo plazo',
+                'fase4-question1-description': 'Describe las estrategias para construir confianza y colaboración.',
+                'fase4-question2': 'Aprovechamiento de la red de influencia',
+                'fase4-question2-description': 'Identifica a los actores clave que pueden brindar apoyo para facilitar la negociación y la implementación del acuerdo.',
+                'fase4-question3': 'Aseguramiento de la sostenibilidad del acuerdo',
+                'fase4-question3-description': 'Describe los mecanismos para garantizar la continuidad del acceso y la asistencia a largo plazo.',
+                'record': 'Grabar',
+                'stop': 'Detener',
+                'delete': 'Eliminar',
+                'save': 'Guardar',
+                'previous': 'Anterior',
+                'next': 'Siguiente',
+                'save-form': 'Guardar Formulario Completo',
+                'clear-form': 'Limpiar Formulario Completo',
+                'preview-print': 'Previsualizar e Imprimir',
+                'print-button': 'Imprimir',
+                'generate-pdf': 'Generar PDF',
+                'summary-title': 'Resumen del Formulario'
+            },
+            en: {
+                'form-title': 'Form (Essential Information for the Design of a Negotiation)',
+                'language-spanish': 'Spanish',
+                'language-english': 'English',
+                'negotiation-title': 'Negotiation Title:',
+                'negotiation-group': 'Who is Negotiating?:',
+                'negotiation-counterpart': 'With Whom are you Negotiating?:',
+                'negotiation-date': 'Date:',
+                'phase-1': 'Phase 1',
+                'phase-2': 'Phase 2',
+                'phase-3': 'Phase 3',
+                'phase-4': 'Phase 4',
+                'fase1-title': 'Phase 1: Understanding the Context',
+                'fase2-title': 'Phase 2: Planning the Strategy',
+                'fase3-title': 'Phase 3: Defining the Transaction',
+                'fase4-title': 'Phase 4: Managing Relationships',
+                'common-recording-instruction': 'If you don\'t want to write, you can record your answer.',
+                'fase1-question1': 'Current humanitarian situation',
+                'fase1-question1-description': 'Describe the crisis, the needs of the affected population, and the existing risks.',
+                'fase1-question2': 'Key actors involved',
+                'fase1-question2-description': 'List the main parties to the negotiation, other humanitarian organizations, political actors, and community leaders.',
+                'fase1-question3': 'Interests, motivations, and values of each key actor',
+                'fase1-question3-description': 'Describe their objectives, priorities, and the logic behind their actions.',
+                'fase1-question4': 'Shared norms and values',
+                'fase1-question4-description': 'Identify the points of convergence that can serve as a basis for dialogue.',
+                'fase1-question5': 'Norms and values in conflict',
+                'fase1-question5-description': 'Describe the divergences that generate tensions in the negotiation.',
+                'fase1-question6': 'Crucial information for the negotiation',
+                'fase1-question6-description': 'What data is needed to assess the situation, plan the operation, and ensure accountability?',
+                'fase1-question7': 'Reliable sources of information',
+                'fase1-question7-description': 'How can accurate and verified information be obtained?',
+                'fase2-question1': 'Main objective of the negotiation',
+                'fase2-question1-description': 'Define the desired outcome of the negotiation (e.g., access, aid distribution, protection).',
+                'fase2-question2': 'Priorities of the humanitarian organization',
+                'fase2-question2-description': 'List the priorities in order of importance (e.g., staff safety, impact, sustainability).',
+                'fase2-question3': 'Most appropriate type of negotiation',
+                'fase2-question3-description': '(Adversarial, Transactional, or Relational). Justify your answer.',
+                'fase2-question4': 'Most appropriate type of sub-negotiation',
+                'fase2-question4-description': '(Political, Professional, or Technical). Justify your answer.',
+                'fase2-question5': 'Most suitable negotiator',
+                'fase2-question5-description': 'Describe the profile and experience of the ideal negotiator to lead the process.',
+                'fase2-question6': 'Non-negotiable red lines',
+                'fase2-question6-description': 'List the limits that cannot be crossed under any circumstances for the organization.',
+                'fase2-question7': 'Arguments to persuade the counterpart',
+                'fase2-question7-description': 'Identify arguments based on shared values, logic, interests, or needs.',
+                'fase2-question8': 'Creating an enabling environment',
+                'fase2-question8-description': 'Describe strategies to build trust, promote collaboration, and manage tensions.',
+                'fase3-question1': 'Specific terms of the agreement',
+                'fase3-question1-description': 'Define the details of the operation (e.g., access, distribution, monitoring).',
+                'fase3-question2': 'Roles and responsibilities of each party',
+                'fase3-question2-description': 'Specify the tasks and obligations of each actor.',
+                'fase3-question3': 'Management of internal and external communication',
+                'fase3-question3-description': 'Describe the communication channels and protocols for message approval.',
+                'fase3-question4': 'Mechanisms to monitor implementation',
+                'fase3-question4-description': 'Define the indicators of success and follow-up procedures.',
+                'fase4-question1': 'Strengthening the long-term relationship',
+                'fase4-question1-description': 'Describe strategies to build trust and collaboration.',
+                'fase4-question2': 'Leveraging the network of influence',
+                'fase4-question2-description': 'Identify key actors who can provide support to facilitate the negotiation and implementation of the agreement.',
+                'fase4-question3': 'Ensuring the sustainability of the agreement',
+                'fase4-question3-description': 'Describe the mechanisms to guarantee the continuity of access and assistance in the long term.',
+                'record': 'Record',
+                'stop': 'Stop',
+                'delete': 'Delete',
+                'save': 'Save',
+                'previous': 'Previous',
+                'next': 'Next',
+                'save-form': 'Save Complete Form',
+                'clear-form': 'Clear Complete Form',
+                'preview-print': 'Preview and Print',
+                'print-button': 'Print',
+                'generate-pdf': 'Generate PDF',
+                'summary-title': 'Form Summary'
+            }
+        };
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            currentTab = parseInt(tabName.replace('fase', ''));
+            updateTabNavigation();
+        }
+
+        function nextTab() {
+            if (currentTab < 4) {
+                currentTab++;
+                openTab({ currentTarget: document.querySelector(`.tab-button[onclick="openTab(event, 'fase${currentTab}')"]`) }, `fase${currentTab}`);
+            }
+        }
+
+        function previousTab() {
+            if (currentTab > 1) {
+                currentTab--;
+                openTab({ currentTarget: document.querySelector(`.tab-button[onclick="openTab(event, 'fase${currentTab}')"]`) }, `fase${currentTab}`);
+            }
+        }
+
+        function updateTabNavigation() {
+            document.querySelector('#fase1 button[onclick="previousTab()"]').disabled = currentTab === 1;
+            document.querySelector('#fase4 button[onclick="nextTab()"]').disabled = currentTab === 4;
+        }
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+
+        function startRecording(fieldName) {
+            if (!recognition) {
+                recognition = new webkitSpeechRecognition();
+                recognition.lang = currentLanguage === 'es' ? 'es-ES' : 'en-US';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onresult = function(event) {
+                    if (event.results[event.results.length - 1].isFinal && !isFinalResult) {
+                        const transcript = event.results[event.results.length - 1][0].transcript;
+                        document.getElementById(fieldName).value += transcript + " "; 
+                        isFinalResult = true; // Marcar que se procesó un resultado final
+                    } else {
+                        isFinalResult = false; // Restablecer para el siguiente resultado final
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Error en el reconocimiento de voz: ', event.error);
+                    stopRecording(fieldName);
+                };
+
+            }
+
+            recordingFieldName = fieldName;
+            recognition.start();
+            updateRecordingButtons(fieldName);
+        }
+
+        function stopRecording(fieldName) {
+            if (recognition) {
+                recognition.stop();
+                recordingFieldName = null;
+                updateRecordingButtons(fieldName);
+            }
+        }
+
+        function deleteRecording(fieldName) {
+            document.getElementById(fieldName).value = '';
+            updateRecordingButtons(fieldName);
+
+        }
+
+        function saveRecording(fieldName) {
+            stopRecording(fieldName);
+        }
+
+        function updateRecordingButtons(fieldName) {
+            const controls = document.getElementById(`${fieldName}Controls`);
+            controls.querySelector('button[onclick="startRecording(\'' + fieldName + '\')"]').disabled = !!recordingFieldName;
+            controls.querySelector('button[onclick="stopRecording(\'' + fieldName + '\')"]').disabled = !recordingFieldName;
+            controls.querySelector('button[onclick="deleteRecording(\'' + fieldName + '\')"]').disabled = !document.getElementById(fieldName).value;
+            controls.querySelector('button[onclick="saveRecording(\'' + fieldName + '\')"]').disabled = !document.getElementById(fieldName).value;
+        }
+
+        function serializeForm() {
+            let formData = {};
+            const elements = document.getElementById('negotiationForm').elements;
+            for (let i = 0; i < elements.length; i++) {
+                const element = elements[i];
+                if (element.id) {
+                    formData[element.id] = element.value;
+                }
+            }
+            formData['negotiationTitle'] = document.getElementById('negotiationTitle').value;
+            formData['negotiationGroup'] = document.getElementById('negotiationGroup').value;
+            formData['negotiationCounterpart'] = document.getElementById('negotiationCounterpart').value;
+            formData['negotiationDate'] = document.getElementById('negotiationDate').value;
+            return formData;
+        }
+
+        function clearForm() {
+            document.getElementById('negotiationForm').reset();
+            document.getElementById('negotiationTitle').value = '';
+            document.getElementById('negotiationGroup').value = '';
+            document.getElementById('negotiationCounterpart').value = '';
+            document.getElementById('negotiationDate').value = '';
+            localStorage.removeItem('negotiationForm');
+            alert('Formulario limpiado');
+
+        }
+
+        function showPrintableContent() {
+            const printableContent = document.createElement('div');
+            printableContent.innerHTML = `
+                <div id="printable-content">
+                    <h2><span data-translate="summary-title">Resumen del Formulario</span></h2>
+                    ${generateFormHeader()}
+                    ${generateSummaryForPhase('fase1')}
+                    ${generateSummaryForPhase('fase2')}
+                    ${generateSummaryForPhase('fase3')}
+                    ${generateSummaryForPhase('fase4')}
+                    <button onclick="window.print();"><span data-translate="print-button">Imprimir</span></button>
+                    <button onclick="generatePDF()"><span data-translate="generate-pdf">Generar PDF</span></button>
+                </div>
+            `;
+
+            // Traducir los elementos dentro de la previsualización
+            printableContent.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const translation = translations[currentLanguage][key] || key;
+                element.textContent = translation;
+            });
+
+            const newWindow = window.open('', '', 'width=800,height=600');
+            newWindow.document.write(printableContent.outerHTML);
+            newWindow.document.close(); 
+        }
+
+        function generateFormHeader() {
+            const title = document.getElementById('negotiationTitle').value;
+            const group = document.getElementById('negotiationGroup').value;
+            const counterpart = document.getElementById('negotiationCounterpart').value;
+            const date = document.getElementById('negotiationDate').value;
+
+            let header = '';
+            if (title) {
+                header += `<p><strong><span data-translate="negotiation-title">Título de la Negociación:</span></strong> ${title}</p>`;
+            }
+            if (group) {
+                header += `<p><strong><span data-translate="negotiation-group">¿Quién está Negociando?:</span></strong> ${group}</p>`;
+            }
+            if (counterpart) {
+                header += `<p><strong><span data-translate="negotiation-counterpart">¿Con Quién se está Negociando?:</span></strong> ${counterpart}</p>`;
+            }
+            if (date) {
+                header += `<p><strong><span data-translate="negotiation-date">Fecha:</span></strong> ${date}</p>`;
+            }
+            return header;
+        }
+
+        function generateSummaryForPhase(phaseId) {
+            let summary = `<h3>${translations[currentLanguage][`${phaseId}-title`]}</h3>`;
+            const questions = document.querySelectorAll(`#${phaseId} .collapsible`);
+            questions.forEach(question => {
+                const questionText = question.querySelector('[data-translate]').textContent;
+                const answer = question.nextElementSibling.querySelector('textarea').value;
+                if (answer) { // Solo mostrar preguntas con respuestas
+                    summary += `<p><strong>${questionText}:</strong><br> ${answer}</p>`; 
+                }
+            });
+            return summary;
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const printableContent = document.getElementById('printable-content');
+
+            html2canvas(printableContent).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                doc.save('formulario_negociacion_resumen.pdf');
+            });
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+
+            // Actualizar placeholders de textareas
+            const placeholders = {
+                es: "Coloque su información aquí",
+                en: "Place your information here"
+            };
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.placeholder = placeholders[lang];
+            });
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const translation = translations[lang][key] || key;
+                element.textContent = translation;
+            });
+
+            recognition = null; // Reiniciar el reconocimiento de voz
+        }
+
+        // Cargar datos del formulario guardados, si existen
+        window.onload = function() {
+            const savedForm = localStorage.getItem('negotiationForm');
+            if (savedForm) {
+                const formData = JSON.parse(savedForm);
+                Object.keys(formData).forEach(key => {
+                    const field = document.getElementById(key);
+                    if (field) {
+                        field.value = formData[key];
+                    } else if (key === 'negotiationTitle' || key === 'negotiationGroup' || key === 'negotiationCounterpart' || key === 'negotiationDate') {
+                        document.getElementById(key).value = formData[key];
+                    }
+                });
+            }
+        };
+
+        function saveForm() {
+            localStorage.setItem('negotiationForm', JSON.stringify(serializeForm()));
+            alert('Formulario guardado');
+        }
+    </script>
+</body>
+</html>
+                
